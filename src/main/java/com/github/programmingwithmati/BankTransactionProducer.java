@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class BankTransactionProducer {
 
@@ -29,39 +30,98 @@ public class BankTransactionProducer {
 
         List<BankTransaction> data1 = List.of(
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(1L)
                         .time(new Date())
-                        .amount(new BigDecimal(500))
+                        .concept("Incomme")
+                        .amount(new BigDecimal(4000))
                         .build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(2L)
                         .time(new Date())
                         .amount(new BigDecimal(3000)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(1L)
+                        .concept("Amazon")
                         .time(new Date())
-                        .amount(new BigDecimal(500)).build(),
+                        .amount(new BigDecimal(-50)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Rent")
+                        .time(new Date())
+                        .amount(new BigDecimal(-1000)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Electricity")
+                        .time(new Date())
+                        .amount(new BigDecimal(-100)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Wallmart")
+                        .time(new Date())
+                        .amount(new BigDecimal(-60)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Vodafone")
+                        .time(new Date())
+                        .amount(new BigDecimal(-25)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Amazon")
+                        .time(new Date())
+                        .amount(new BigDecimal(-20)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Netflix")
+                        .time(new Date())
+                        .amount(new BigDecimal(-10)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Transport")
+                        .time(new Date())
+                        .amount(new BigDecimal(-10)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
+                        .balanceId(1L)
+                        .concept("Transport")
+                        .time(new Date())
+                        .amount(new BigDecimal(-10)).build(),
+                BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(4L)
                         .time(new Date())
                         .amount(new BigDecimal(2000)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(4L)
                         .time(new Date())
                         .amount(new BigDecimal(-2500)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(3L)
                         .time(new Date())
                         .amount(new BigDecimal(1000)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(1L)
                         .time(new Date())
                         .amount(new BigDecimal(-500)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(2L)
                         .time(new Date())
                         .amount(new BigDecimal(-4000)).build(),
                 BankTransaction.builder()
+                        .id(UUID.randomUUID().toString())
                         .balanceId(3L)
                         .time(new Date())
                         .amount(new BigDecimal(-500)).build()
@@ -71,6 +131,7 @@ public class BankTransactionProducer {
                 .forEach(record -> send(bankTransactionProducer, record));
 
         BankTransaction bankTransaction = BankTransaction.builder()
+                .id(UUID.randomUUID().toString())
                 .balanceId(3L)
                 .time(new Date())
                 .amount(new BigDecimal(-10_000)).build();

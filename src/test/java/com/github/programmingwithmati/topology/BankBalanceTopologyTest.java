@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -88,20 +89,21 @@ class BankBalanceTopologyTest {
 
     @Test
     void testTopologyWhenRejection() {
+        var rejectedTransactionId = UUID.randomUUID().toString();
         List.of(
                 BankTransaction.builder()
-                        .id(1L)
+                        .id(rejectedTransactionId)
                         .balanceId(1L)
                         .time(new Date())
                         .amount(new BigDecimal(-500))
                         .build(),
                 BankTransaction.builder()
-                        .id(2L)
+                        .id(UUID.randomUUID().toString())
                         .balanceId(2L)
                         .time(new Date())
                         .amount(new BigDecimal(3000)).build(),
                 BankTransaction.builder()
-                        .id(3L)
+                        .id(UUID.randomUUID().toString())
                         .balanceId(1L)
                         .time(new Date())
                         .amount(new BigDecimal(500)).build()
@@ -126,7 +128,7 @@ class BankBalanceTopologyTest {
 
         var bankTransaction = rejectedBankTransactionTopic.readValue();
 
-        assertEquals(1L, bankTransaction.getId());
+        assertEquals(rejectedTransactionId, bankTransaction.getId());
         assertEquals(BankTransaction.BankTransactionState.REJECTED, bankTransaction.getState());
     }
 }
