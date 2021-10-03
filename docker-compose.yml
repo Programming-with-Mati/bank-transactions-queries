@@ -39,3 +39,28 @@ services:
     working_dir: /scripts
     volumes:
     - ./scripts:/scripts
+
+  spring-app-1:
+    container_name: spring-app-1
+    hostname: spring-app-1
+    image: bank/bank-transactions:latest
+    depends_on:
+      - kafka-create-topics
+    ports:
+     - "7070:8080"
+    volumes:
+     - /tmp/kafka-streams/1:/tmp/kafka-streams
+    command: java -jar /app.jar --host.info=spring-app-1:8080
+
+  spring-app-2:
+    container_name: spring-app-2
+    hostname: spring-app-2
+    image: bank/bank-transactions:latest
+    depends_on:
+      - kafka-create-topics
+    ports:
+      - "8080:8080"
+    volumes:
+      - /tmp/kafka-streams/2:/tmp/kafka-streams
+    command: java -jar /app.jar --host.info=spring-app-2:8080
+
