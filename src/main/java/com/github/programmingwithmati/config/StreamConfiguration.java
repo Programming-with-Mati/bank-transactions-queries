@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Properties;
 
@@ -58,10 +57,5 @@ public class StreamConfiguration {
         log.info("Creating host info: {}", hostInfo);
         var split = hostInfo.split(":");
         return new HostInfo(split[0], Integer.parseInt(split[1]));
-    }
-
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
     }
 }

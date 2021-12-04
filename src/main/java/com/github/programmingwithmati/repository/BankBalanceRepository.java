@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.programmingwithmati.model.BankBalance;
 import com.github.programmingwithmati.model.JsonSerde;
 import com.github.programmingwithmati.topology.BankBalanceTopology;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
 
+@Slf4j
 @Component
 public class BankBalanceRepository extends GenericKafkaStreamsRepository<Long, BankBalance> {
 
@@ -22,8 +24,7 @@ public class BankBalanceRepository extends GenericKafkaStreamsRepository<Long, B
 
     public BankBalanceRepository(
             HostInfo hostInfo,
-            KafkaStreams kafkaStreams,
-            RestTemplate restTemplate
+            KafkaStreams kafkaStreams
     ) {
         super(
                 Serdes.Long(),
@@ -31,12 +32,12 @@ public class BankBalanceRepository extends GenericKafkaStreamsRepository<Long, B
                 hostInfo,
                 kafkaStreams,
                 BankBalanceTopology.BANK_BALANCES_STORE,
-                "/bank-balance/%s",
-                restTemplate);
+                "/bank-balance/%s");
     }
 
     @Override
     protected BankBalance findRemotely(Long key, HostInfo hostInfo) {
+        log.info("Finding Bank Balance with key {} remotely in host {}", key, hostInfo);
         var url = "http://%s:%d" + findRemotelyUri;
         var urlWithParams = url.formatted(hostInfo.host(), hostInfo.port(), key.toString());
         var okHttpClient = new OkHttpClient();

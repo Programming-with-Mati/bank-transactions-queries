@@ -2,6 +2,7 @@ package com.github.programmingwithmati.repository;
 
 import com.github.programmingwithmati.repository.exceptions.ObjectNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 public abstract class GenericKafkaStreamsRepository<K,V> {
 
@@ -21,7 +23,6 @@ public abstract class GenericKafkaStreamsRepository<K,V> {
     private final KafkaStreams kafkaStreams;
     private final String storeName;
     protected String findRemotelyUri;
-    protected RestTemplate restTemplate;
 
     public V find(K key) {
         var metadata = kafkaStreams.queryMetadataForKey(storeName, key, keySerde.serializer());
@@ -31,6 +32,7 @@ public abstract class GenericKafkaStreamsRepository<K,V> {
     }
 
     private V findLocally(K key) {
+        log.info("Looking for object with key: {}, locally", key);
         return Optional
                 .ofNullable(getStore().get(key))
                 .orElseThrow(() -> new ObjectNotFoundException(key, storeName));
