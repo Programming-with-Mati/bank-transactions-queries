@@ -3,6 +3,7 @@ package com.github.programmingwithmati;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.programmingwithmati.model.BankTransaction;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -14,12 +15,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+@Slf4j
 public class BankTransactionProducer {
 
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         KafkaProducer<Long, String> bankTransactionProducer =
                 new KafkaProducer<>(Map.of(
                         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092",
@@ -33,7 +37,7 @@ public class BankTransactionProducer {
                         .id(UUID.randomUUID().toString())
                         .balanceId(1L)
                         .time(new Date())
-                        .concept("Incomme")
+                        .concept("Income")
                         .amount(new BigDecimal(4000))
                         .build(),
                 BankTransaction.builder()
@@ -138,6 +142,19 @@ public class BankTransactionProducer {
 
         send(bankTransactionProducer, new ProducerRecord<>("bank-transactions", bankTransaction.getBalanceId(), toJson(bankTransaction)));
 
+        while(true) {
+            Thread.sleep(4000L);
+            Stream.of(BankTransaction.builder()
+                            .id(UUID.randomUUID().toString())
+                            .balanceId(3L)
+                            .time(new Date())
+                            .amount(new BigDecimal(-10_000)).build())
+                    .peek(t -> log.info("Sending new transaction: {}", t))
+                    .map(t ->new ProducerRecord<>("bank-transactions", t.getBalanceId(), toJson(t)))
+                    .forEach(record -> send(bankTransactionProducer, record));
+        }
+
+
     }
 
     @SneakyThrows
@@ -150,3 +167,5 @@ public class BankTransactionProducer {
         return OBJECT_MAPPER.writeValueAsString(bankTransaction);
     }
 }
+
+

@@ -25,4 +25,12 @@ kafka-topics \
   --partitions 4 \
   --create
 
+
+kafka-topics \
+  --bootstrap-server kafka:9092 \
+  --topic possible-fraud-alert \
+  --replication-factor 1 \
+  --partitions 4 \
+  --create
+
 sleep infinity
