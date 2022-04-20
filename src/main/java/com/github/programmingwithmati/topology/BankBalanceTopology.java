@@ -50,20 +50,6 @@ public class BankBalanceTopology {
                 .mapValues((readOnlyKey, value) -> value.getLatestTransactions().first())
                 .filter((key, value) -> value.state == BankTransaction.BankTransactionState.REJECTED);
 
-        rejectedTransactionsStream
-                .groupByKey()
-                .windowedBy(TimeWindows.of(Duration.of(20L, ChronoUnit.SECONDS)).grace(Duration.ofSeconds(2L)))
-                .count()
-                .suppress(Suppressed.untilWindowCloses(Suppressed.BufferConfig.unbounded()))
-                .toStream()
-                .peek((key, value) -> log.info("Peek rejected transaction count for id: {}, value: {}", key.key(), value))
-                .map((windowKey, value) -> KeyValue.pair(windowKey.key(), value))
-                .filter((key, value) -> value >= FRAUD_ALERT_THRESHOLD)
-                .mapValues((key, value) -> new PossibleFraudAlert(key, value, "Account %s had %d rejected transactions".formatted(key, value)))
-                .to("possible-fraud-alert", Produced.with(Serdes.Long(), possibleFraudAlertSerde));
-
-        rejectedTransactionsStream
-                .to(REJECTED_TRANSACTIONS, Produced.with(Serdes.Long(), bankTransactionSerde));
 
         return streamsBuilder.build();
     }
