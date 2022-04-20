@@ -33,8 +33,7 @@ public class BankBalanceTopology {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
 
         KStream<Long, BankBalance> bankBalancesStream = streamsBuilder.stream(BANK_TRANSACTIONS,
-                Consumed.with(Serdes.Long(), bankTransactionSerde)
-                        .withTimestampExtractor(new TransactionTimeExtractor()))
+                Consumed.with(Serdes.Long(), bankTransactionSerde))
                 .groupByKey()
                 .aggregate(BankBalance::new,
                         (key, value, aggregate) -> aggregate.process(value),
@@ -49,7 +48,6 @@ public class BankBalanceTopology {
         var rejectedTransactionsStream = bankBalancesStream
                 .mapValues((readOnlyKey, value) -> value.getLatestTransactions().first())
                 .filter((key, value) -> value.state == BankTransaction.BankTransactionState.REJECTED);
-
 
         return streamsBuilder.build();
     }
